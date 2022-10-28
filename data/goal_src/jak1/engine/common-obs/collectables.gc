@@ -525,6 +525,9 @@
       )
     )
   :enter (behavior ()
+    (if (and (= (-> self type) fuel-cell) (task-closed? (the game-task (-> self fact pickup-amount)) (task-status need-resolution)))
+      (go-virtual die)
+      )
     (if (and (logtest? (-> self fact options) (fact-options instant-collect can-collect))
              (logtest? (-> self flags) (collectable-flags can-collect))
              (!= (-> self next-state name) 'pickup)
@@ -1522,6 +1525,7 @@
     )
   )
 
+(define-extern reset-to-level-start (function game-task none))
 (defstate pickup (fuel-cell)
   :virtual #t
   :enter (behavior ((arg0 object) (arg1 handle))
@@ -1962,6 +1966,11 @@
         )
     (none)
     )
+  :exit (behavior ()
+    (format #t "reset after picking up ~S fuel cell~%" (game-task->string (the game-task (-> self fact pickup-amount))))
+    (reset-to-level-start (the game-task (-> self fact pickup-amount)))
+    (none)
+    )
   )
 
 (defmethod initialize fuel-cell ((obj fuel-cell))
@@ -2035,14 +2044,20 @@
        (set! (-> self jump-pos y) (+ 4096.0 (-> self jump-pos y)))
        (go-virtual jump)
        )
-      ((and gp-1
-            (zero? (logand (res-lump-value (-> self entity) 'options fact-options :time (the-as float -1000000000.0))
+      ((and (zero? (logand (res-lump-value (-> self entity) 'options fact-options :time (the-as float -1000000000.0))
                            (fact-options skip-jump-anim)
                            )
                    )
             (zero? (logand (-> self fact options) (fact-options skip-jump-anim)))
             )
-       (set! (-> self jump-pos quad) (-> (the-as vector gp-1) quad))
+       (cond
+        (gp-1
+          (set! (-> self jump-pos quad) (-> (the-as vector gp-1) quad))
+          )
+        (else
+          (set! (-> self jump-pos quad) (-> arg0 quad))
+          )
+        )
        (set! (-> self jump-pos y) (+ 4096.0 (-> self jump-pos y)))
        (go-virtual jump)
        )
@@ -2327,6 +2342,7 @@
   (set! (-> obj collect-timeout) (seconds 2))
   (update-transforms! (-> obj root-override))
   (update-trans! (-> obj sound) (-> obj root-override trans))
+  (set-vector! (-> obj draw color-mult) 1.0 0.0 0.0 1.0)  ;; red buzzers for red coins
   (if (and (-> obj entity) (logtest? (-> obj entity extra perm status) (entity-perm-status complete)))
       (go (method-of-object obj wait))
       (go (method-of-object obj pickup) #t (the-as handle #f))
@@ -2355,6 +2371,7 @@
   (update-transforms! (-> self root-override))
   (update-trans! (-> self sound) (-> self root-override trans))
   (set! (-> self event-hook) (-> (method-of-object self wait) event))
+  (set-vector! (-> self draw color-mult) 1.0 0.0 0.0 1.0)  ;; red buzzers for red coins
   (go-virtual wait)
   (none)
   )

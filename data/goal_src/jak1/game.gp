@@ -380,7 +380,7 @@
 ;; Text
 ;;;;;;;;;;;;;;;;;;;;;
 
-(defstep :in "game/assets/game_text.gp"
+(defstep :in "game/assets/jak1/game_text.gp"
   :tool 'text
   :out '("$OUT/iso/0COMMON.TXT"
          "$OUT/iso/1COMMON.TXT"
@@ -391,7 +391,7 @@
          "$OUT/iso/6COMMON.TXT")
   )
 
-(defstep :in "game/assets/game_subtitle.gp"
+(defstep :in "game/assets/jak1/game_subtitle.gp"
   :tool 'subtitle
   :out '("$OUT/iso/0SUBTIT.TXT"
          "$OUT/iso/3SUBTIT.TXT"
@@ -2048,6 +2048,15 @@
 (goal-src "pc/progress-pc.gc" "progress" "pckernel")
 (goal-src "pc/util/anim-tester-x.gc" "pckernel" "gstring" "joint" "process-drawable" "art-h" "effect-control")
 (goal-src "pc/hud-classes-pc.gc" "pckernel" "hud" "battlecontroller" "generic-obs")
+
+
+(goal-src-sequence
+  "engine/"
+  :deps ;; no idea what these depend on, make it depend on the whole engine
+    ("$OUT/obj/ticky.o")
+  "game/mods_sm64.gc"
+  )
+
 
 ;; the debug menu is modified to include PC specific options:
 (goal-src "engine/debug/default-menu.gc" "anim-tester-x" "part-tester")

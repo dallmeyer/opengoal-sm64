@@ -163,6 +163,7 @@
   (-> obj task-perm-list data arg0)
   )
 
+(define-extern restore-completed-tasks (function none))
 (defmethod initialize! game-info ((obj game-info) (cause symbol) (save-to-load game-save) (continue-point-override string))
   "Initialize the game-info.
     The cause can be 'dead if you die, or 'game to reset everything.
@@ -246,7 +247,7 @@
      (set! (-> obj continue-time) (-> *display* base-frame-counter))
      (set! (-> obj death-time) (-> *display* base-frame-counter))
      (set! (-> obj hit-time) (-> *display* base-frame-counter))
-     (dotimes (v1-50 116)
+     (dotimes (v1-50 (the int (game-task max)))
        (set! (-> obj fuel-cell-time 0) 0)
        (nop!)
        )
@@ -313,6 +314,7 @@
                                              )
                                            (suspend)
                                            (start arg0 arg2)
+                                           (restore-completed-tasks)
                                            (none)
                                            )
                               (-> obj mode) cause (get-or-create-continue! obj) save-to-load
@@ -325,7 +327,6 @@
   (label cfg-50)
   obj
   )
-
 
 (defmethod adjust game-info ((obj game-info) (item symbol) (amount float) (source handle))
   "Adjust the number of items by amount."
@@ -357,7 +358,11 @@
            ;; we have task data for this level!
            (when (>= (-> *level-task-data-remap* length) (-> proc entity extra level info index))
              ;; get the level index
-             (let ((level-idx (-> *level-task-data-remap* (+ (-> proc entity extra level info index) -1))))
+             (let* ((idx (+ (-> proc entity extra level info index) -1))
+                    (level-idx (-> *level-task-data-remap* idx))
+                    (old-amt (-> obj money-per-level level-idx))
+                    (game-task-100-orbs (the game-task (+ 116 idx)))  ;; 116 is training-100-orbs, others follow in order
+                   )
                ;; increment the level money count
                (+! (-> obj money-per-level level-idx) (the int amount))
                ;; increment our total money in the game (out of the 2000 max orbs)
@@ -366,6 +371,23 @@
                (if (= (-> obj money-per-level level-idx) (-> (get-game-count level-idx) money-count))
                    (activate-orb-all level-idx)
                    )
+               ;; if we have just reached 100+ orbs in the level, and haven't gotten the 100 orb cell yet, birth the cell
+               (when (and (< old-amt 100)
+                          (>= (-> obj money-per-level level-idx) 100)
+                          (not (task-closed? game-task-100-orbs (task-status need-resolution)))
+                          )
+                  (let ((fact (new 'static 'fact-info)))
+                    (logior! (-> fact options) (fact-options instant-collect))
+                    (birth-pickup-at-point
+                      (vector+! (new 'stack-no-clear 'vector) (-> (the process-drawable proc) root trans) (new 'static 'vector :y 4096.0 :w 1.0))
+                      (pickup-type fuel-cell)
+                      (the float game-task-100-orbs)
+                      #f
+                      *target*
+                      fact
+                      )
+                    )
+                  )
                )
              )
            )
@@ -413,8 +435,16 @@
              ;; valid fly index
 
              ;; increment total if we haven't collected it before
-             (if (zero? (logand buzz-bits (ash 1 buzz-index)))
+             (when (zero? (logand buzz-bits (ash 1 buzz-index)))
                  (set! (-> obj buzzer-total) (+ 1.0 (-> obj buzzer-total)))
+
+                 ;; pickup 2 orbs (SM64 red coins count as 2x coins)
+                 (pickup-collectable!
+                    (-> *target* fact-info-target)
+                    (pickup-type money)
+                    2.0
+                    source
+                    )
                  )
 
              ;; set the updated bits
@@ -916,7 +946,7 @@
   (inspect obj)
   (when (or (not arg0) (= arg0 'game-task))
     (format #t "~Tgame-task:~%")
-    (dotimes (s4-0 116)
+    (dotimes (s4-0 (the int (game-task max)))
       (if (task-complete? obj (the-as game-task s4-0))
           (format #t "~T~T~S~%" (game-task->string (the-as game-task s4-0)))
           )
@@ -944,7 +974,7 @@
 
   ;; task perms
   (when (zero? (-> gp-0 task-perm-list))
-    (let ((v1-15 (new 'global 'entity-perm-array 116)))
+    (let ((v1-15 (new 'global 'entity-perm-array (the int (game-task max)))))
       (set! (-> gp-0 task-perm-list) v1-15)
       (dotimes (a0-24 (-> v1-15 length))
         (set! (-> v1-15 data a0-24 task) (the-as game-task a0-24))

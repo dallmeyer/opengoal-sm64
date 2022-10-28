@@ -1,0 +1,227 @@
+;;-*-Lisp-*-
+(in-package goal)
+
+(define *task-completed-backup* (the-as (array uint32) (new 'static 'array uint32 132
+  0 0 0 0 0 0 0 0 0 0 
+  0 0 0 0 0 0 0 0 0 0 
+  0 0 0 0 0 0 0 0 0 0 
+  0 0 0 0 0 0 0 0 0 0 
+  0 0 0 0 0 0 0 0 0 0 
+  0 0 0 0 0 0 0 0 0 0 
+  0 0 0 0 0 0 0 0 0 0 
+  0 0 0 0 0 0 0 0 0 0 
+  0 0 0 0 0 0 0 0 0 0 
+  0 0 0 0 0 0 0 0 0 0 
+  0 0 0 0 0 0 0 0 0 0 
+  0 0 0 0 0 0 0 0 0 0 
+  0 0 0 0 0 0 0 0 0 0
+  0 0
+  )))
+
+(define *reset-started?* #f)
+(defun reset-to-level-start ((tsk game-task))
+  (when (not *reset-started?*)
+    (case tsk
+      (((game-task training-100-orbs) (game-task village1-100-orbs) (game-task beach-100-orbs) (game-task jungle-100-orbs) (game-task misty-100-orbs) (game-task firecanyon-100-orbs) (game-task village2-100-orbs) (game-task sunken-100-orbs) (game-task swamp-100-orbs) (game-task rolling-100-orbs) (game-task ogre-100-orbs) (game-task village3-100-orbs) (game-task snow-100-orbs) (game-task cave-100-orbs) (game-task lavatube-100-orbs) (game-task citadel-100-orbs))
+        ;; dont reset for 100 orb cells
+        (none)
+        )
+      (else 
+        (set! *reset-started?* #t)
+        (let ((checkpointName
+                (case tsk
+                  (((game-task training-gimmie) (game-task training-door) (game-task training-climb) (game-task training-buzzer))
+                    (format 0 "choosing training-start~%")
+                    "training-start"
+                    )
+                  (((game-task village1-yakow) (game-task village1-mayor-money) (game-task village1-uncle-money) (game-task village1-oracle-money1) (game-task village1-oracle-money2) (game-task village1-buzzer))
+                    "village1-warp"
+                    )
+                  (((game-task beach-ecorocks) (game-task beach-pelican) (game-task beach-flutflut) (game-task beach-seagull) (game-task beach-cannon) (game-task beach-buzzer) (game-task beach-gimmie) (game-task beach-sentinel))
+                    "beach-start"
+                    )
+                  (((game-task jungle-eggtop) (game-task jungle-lurkerm) (game-task jungle-tower) (game-task jungle-fishgame) (game-task jungle-plant) (game-task jungle-buzzer) (game-task jungle-canyon-end) (game-task jungle-temple-door))
+                    "jungle-start"
+                    )
+                  (((game-task misty-muse) (game-task misty-boat) (game-task misty-warehouse) (game-task misty-cannon) (game-task misty-bike) (game-task misty-buzzer) (game-task misty-bike-jump) (game-task misty-eco-challenge))
+                    "misty-start"
+                    )
+                  (((game-task firecanyon-buzzer) (game-task firecanyon-end))
+                    "firecanyon-start"
+                    )
+                  (((game-task village2-gambler-money) (game-task village2-geologist-money) (game-task village2-warrior-money) (game-task village2-oracle-money1) (game-task village2-oracle-money2) (game-task village2-buzzer))
+                    "village2-warp"
+                    )
+                  (((game-task sunken-platforms) (game-task sunken-pipe) (game-task sunken-slide) (game-task sunken-room) (game-task sunken-sharks) (game-task sunken-buzzer) (game-task sunken-top-of-helix) (game-task sunken-spinning-room))
+                    "sunken-start"
+                    )
+                  (((game-task swamp-billy) (game-task swamp-flutflut) (game-task swamp-battle) (game-task swamp-tether-1) (game-task swamp-tether-2) (game-task swamp-tether-3) (game-task swamp-tether-4) (game-task swamp-buzzer))
+                    "swamp-start"
+                    )
+                  (((game-task rolling-race) (game-task rolling-robbers) (game-task rolling-moles) (game-task rolling-plants) (game-task rolling-lake) (game-task rolling-buzzer) (game-task rolling-ring-chase-1) (game-task rolling-ring-chase-2))
+                    "rolling-start"
+                    )
+                  (((game-task ogre-boss) (game-task ogre-end) (game-task ogre-buzzer) (game-task ogre-secret))
+                    "ogre-start"
+                    )
+                  (((game-task village3-miner-money1) (game-task village3-miner-money2) (game-task village3-miner-money3) (game-task village3-miner-money4) (game-task village3-oracle-money1) (game-task village3-oracle-money2) (game-task village3-extra1) (game-task village3-buzzer))
+                    "village3-warp"
+                    )
+                  (((game-task snow-eggtop) (game-task snow-ram) (game-task snow-fort) (game-task snow-ball) (game-task snow-bunnies) (game-task snow-buzzer) (game-task snow-bumpers) (game-task snow-cage))
+                    "snow-start"
+                    )
+                  (((game-task cave-gnawers) (game-task cave-dark-crystals) (game-task cave-dark-climb) (game-task cave-robot-climb) (game-task cave-swing-poles) (game-task cave-spider-tunnel) (game-task cave-platforms) (game-task cave-buzzer))
+                    "maincave-start"
+                    )
+                  (((game-task lavatube-end) (game-task lavatube-buzzer))
+                    "lavatube-start"
+                    )
+                  (((game-task citadel-sage-green) (game-task citadel-sage-blue) (game-task citadel-sage-red) (game-task citadel-sage-yellow) (game-task citadel-buzzer))
+                    "citadel-start"
+                    )
+                  (else
+                    (format #t "resetting due to death, based on cur level~%")
+                    (case (-> *target* current-level name)
+                      (('training)
+                        "training-start"
+                        )
+                      (('village1)
+                        "village1-warp"
+                        )
+                      (('beach)
+                        "beach-start"
+                        )
+                      (('jungle 'jungleb)
+                        "jungle-start"
+                        )
+                      (('misty)
+                        "misty-start"
+                        )
+                      (('firecanyon)
+                        "firecanyon-start"
+                        )
+                      (('village2)
+                        "village2-warp"
+                        )
+                      (('sunken 'sunkenb)
+                        "sunken-start"
+                        )
+                      (('swamp)
+                        "swamp-start"
+                        )
+                      (('rolling)
+                        "rolling-start"
+                        )
+                      (('ogre)
+                        "ogre-start"
+                        )
+                      (('village3)
+                        "village3-warp"
+                        )
+                      (('snow)
+                        "snow-start"
+                        )
+                      (('darkcave 'maincave 'robocave)
+                        "maincave-start"
+                        )
+                      (('lavatube)
+                        "lavatube-start"
+                        )
+                      (('citadel)
+                        "citadel-start"
+                        )
+                      (else   ;; should never be hit
+                        "training-start"
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            
+          (format 0 "~S fuel cell anim warp ~A -> ~S~%" (game-task->string tsk) (-> *target* current-level name) checkpointName)
+
+          (let* ((idx (the int (game-task jungle-eggtop)))
+                (max (the int (game-task max)))
+                )
+            ;; backup task statuses in bitmask
+            (while (> (the-as uint max) (the-as uint idx))
+              (set! (-> *task-completed-backup* idx) 0)
+              (if (and (task-exists? (the-as game-task idx) (task-status need-hint)) (task-closed? (the-as game-task idx) (task-status need-hint)))
+                (logior! (-> *task-completed-backup* idx) (ash 1 (task-status need-hint)))
+                )
+              (if (and (task-exists? (the-as game-task idx) (task-status need-introduction)) (task-closed? (the-as game-task idx) (task-status need-introduction)))
+                (logior! (-> *task-completed-backup* idx) (ash 1 (task-status need-introduction)))
+                )
+              (if (and (task-exists? (the-as game-task idx) (task-status need-reminder-a)) (task-closed? (the-as game-task idx) (task-status need-reminder-a)))
+                (logior! (-> *task-completed-backup* idx) (ash 1 (task-status need-reminder-a)))
+                )
+              (if (and (task-exists? (the-as game-task idx) (task-status need-reminder)) (task-closed? (the-as game-task idx) (task-status need-reminder)))
+                (logior! (-> *task-completed-backup* idx) (ash 1 (task-status need-reminder)))
+                )
+              (if (and (task-exists? (the-as game-task idx) (task-status need-reward-speech)) (task-closed? (the-as game-task idx) (task-status need-reward-speech)))
+                (logior! (-> *task-completed-backup* idx) (ash 1 (task-status need-reward-speech)))
+                )
+              (if (and (task-exists? (the-as game-task idx) (task-status need-resolution)) (task-closed? (the-as game-task idx) (task-status need-resolution)))
+                (logior! (-> *task-completed-backup* idx) (ash 1 (task-status need-resolution)))
+                )
+              (+! idx 1)
+              )
+            )
+            
+          ;; new game
+          (initialize! *game-info* 'game (the-as game-save #f) checkpointName)
+          )
+        )
+      )
+    )
+  (none)
+  )
+
+(defun restore-completed-tasks ()
+  (when *reset-started?*
+    ;; reload task statuses from bitmask
+    (let* ((idx (the int (game-task jungle-eggtop)))
+          (max (the int (game-task max)))
+          )
+      (while (> (the-as uint max) (the-as uint idx))
+        (if (logtest? (-> *task-completed-backup* idx) (ash 1 (task-status need-hint)))
+          (close-specific-task! (the game-task idx) (task-status need-hint))
+          )
+        (if (logtest? (-> *task-completed-backup* idx) (ash 1 (task-status need-introduction)))
+          (close-specific-task! (the game-task idx) (task-status need-introduction))
+          )
+        (if (logtest? (-> *task-completed-backup* idx) (ash 1 (task-status need-reminder-a)))
+          (close-specific-task! (the game-task idx) (task-status need-reminder-a))
+          )
+        (if (logtest? (-> *task-completed-backup* idx) (ash 1 (task-status need-reminder)))
+          (close-specific-task! (the game-task idx) (task-status need-reminder))
+          )
+        (if (logtest? (-> *task-completed-backup* idx) (ash 1 (task-status need-reward-speech)))
+          (close-specific-task! (the game-task idx) (task-status need-reward-speech))
+          )
+        (when (logtest? (-> *task-completed-backup* idx) (ash 1 (task-status need-resolution)))
+          (close-specific-task! (the game-task idx) (task-status need-resolution))
+          (case (the game-task idx)
+            (((game-task firecanyon-assistant) (game-task village2-levitator) (game-task swamp-arm) (game-task village3-button)
+            (game-task red-eggtop) (game-task lavatube-balls) (game-task lavatube-start) (game-task intro) (game-task village4-button) 
+            (game-task finalboss-movies)  (game-task plunger-lurker-hit) (game-task leaving-misty) (game-task assistant-village3))
+              ;; do nothing for non-cell tasks
+              (none)
+              )
+            (else       
+              ;; cell pickup
+              (send-event *target* 'get-pickup 6 (the float idx))
+              )
+            )
+          )
+
+        ;; reset task backup
+        (set! (-> *task-completed-backup* idx) 0)
+        (+! idx 1)
+        )
+      )
+    (set! *reset-started?* #f)
+    )
+  (none)
+  )
