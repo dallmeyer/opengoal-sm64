@@ -16,6 +16,7 @@ https://opengoal-unofficial-mods.github.io/
   - Dying in final boss originally warped you back to Geyser Rock due to missed case in the code
     - If for some reason you want to revisit this, there's a toggle under Misc Options
   - Power Cells/Precursor Orbs/Scout Flies are gold/gold/red to match Stars/Coins/Red Coins (duh)
+  - Autosplitter should still work, and there's an [updated ASL file here](https://github.com/dallmeyer/opengoal-sm64/blob/main/opengoal-jak1-autosplitter-SM64.asl) which supports splitting on the Power Cells from collecting 100 Precursor Orbs
   
 
 <img src=https://github.com/dallmeyer/opengoal-sm64/blob/main/ModImage.png width=400/>
